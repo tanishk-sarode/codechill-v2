@@ -1,0 +1,17 @@
+File/Folder,Path,Purpose,Notes
+src/,src/,Angular source code,Main Angular application folder
+app/,src/app/,App root module,Contains main app component and routing
+core/,src/app/core/,Core services and guards,"Auth service, guards, interceptors"
+shared/,src/app/shared/,Shared components & services,"Reusable components, pipes, directives"
+features/,src/app/features/,Feature modules,Main application features
+editor/,src/app/features/editor/,Code editor feature,"Monaco editor, syntax highlighting"
+room/,src/app/features/room/,Room management,"Room creation, joining, participant list"
+profile/,src/app/features/profile/,User profiles,"GitHub, LeetCode, Codeforces stats"
+chat/,src/app/features/chat/,Chat functionality,Real-time messaging components
+auth/,src/app/features/auth/,Authentication,"Login, logout, profile components"
+assets/,src/assets/,Static assets,"Images, icons, fonts"
+environments/,src/environments/,Environment configs,Development and production settings
+styles/,src/styles/,Global styles,"Tailwind CSS, theme variables"
+package.json,package.json,Dependencies,"Angular 20, Auth0, Socket.IO client"
+angular.json,angular.json,Angular config,"Build settings, assets, styles"
+.postcssrc.json,.postcssrc.json,PostCSS config,Tailwind CSS processing

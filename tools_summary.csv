@@ -1,0 +1,40 @@
+Category,Tool/Technology,Version/Type,Purpose,Free Tier,Notes
+Frontend,Angular,v20,Core framework,Free,"Standalone components, signals"
+Frontend,TypeScript,v5.8+,Programming language,Free,Required for Angular 20
+Frontend,Tailwind CSS,v4,Styling framework,Free,Utility-first CSS
+Frontend,Angular Material,v20,UI components,Free,Material Design components
+Frontend,Monaco Editor,Latest,Code editor,Free,VS Code editor in browser
+Frontend,Socket.IO Client,v4+,Real-time communication,Free,WebSocket abstraction
+Frontend,Auth0 Angular SDK,Latest,Authentication,"7,000 MAUs free",Identity management
+Backend,Flask,v3+,Web framework,Free,Python microframework
+Backend,Flask-SocketIO,v5.5+,WebSocket support,Free,Real-time bi-directional
+Backend,PyMySQL,Latest,MySQL connector,Free,Database connectivity
+Backend,Flask-CORS,Latest,Cross-origin support,Free,CORS handling
+Backend,Python,v3.10+,Programming language,Free,Backend runtime
+Database,MySQL,v8.0,Relational database,Free (self-hosted),Primary data storage
+Database,Neon,PostgreSQL,Cloud database,3GB free,Alternative to PlanetScale
+Database,Railway Database,PostgreSQL/MySQL,Cloud database,$5/month,Integrated with Railway
+Database,Supabase,PostgreSQL,Cloud database,500MB free,Full backend-as-a-service
+API,Judge0 CE,Latest,Code execution,Free tier,60+ programming languages
+API,GitHub API,v4 GraphQL,User stats,5000 req/hour,Repository & contribution data
+API,LeetCode API,Unofficial,Problem stats,Free,Community-maintained
+API,Codeforces API,Official,Contest stats,Free,Official competitive programming API
+WebRTC,Google STUN,stun.l.google.com:19302,NAT traversal,Free,Public STUN server
+WebRTC,Open Relay TURN,openrelay.metered.ca:80,Media relay,20GB/month free,Fallback for restricted NATs
+WebRTC,WebRTC API,Browser native,P2P communication,Free,Audio/video streaming
+Dev Tools,Angular CLI,v20+,Project scaffolding,Free,ng commands
+Dev Tools,VS Code,Latest,Code editor,Free,Primary development IDE
+Dev Tools,Postman,Latest,API testing,Free tier,REST API testing
+Dev Tools,Git/GitHub,Latest,Version control,Free,Source code management
+Design,Figma,Web-based,UI/UX design,3 projects free,Design mockups
+Design,TeleportHQ,Web-based,Figma to code,Free plan,Design to Angular components
+Design,Canva,Web-based,Asset creation,Free tier,"Icons, images, graphics"
+Deployment,Vercel,Platform,Frontend hosting,Hobby plan free,Angular deployment
+Deployment,Railway,Platform,Full-stack hosting,$5/month,Backend + database
+Deployment,Render,Platform,Full-stack hosting,Free tier,Alternative hosting
+Deployment,Netlify,Platform,Frontend hosting,100GB/month free,Static site hosting
+AI Tools,GitHub Copilot,IDE extension,Code completion,$10/month,AI pair programming
+AI Tools,Codeium,IDE extension,Code completion,Free tier,Alternative to Copilot
+AI Tools,ChatGPT,Web/API,Code assistance,Free tier,Problem solving help
+Analytics,Vercel Analytics,Integrated,Usage tracking,Free tier,Performance monitoring
+Analytics,Railway Metrics,Integrated,Server monitoring,Included,Backend performance

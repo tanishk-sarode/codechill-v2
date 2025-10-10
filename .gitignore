@@ -1,3 +1,38 @@
+# CodeChill Project .gitignore
+
+# ===================
+# FRONTEND / ANGULAR
+# ===================
+
+# Compiled output
+/frontend/dist/
+/frontend/tmp/
+/frontend/out-tsc/
+/frontend/bazel-out/
+
+# Node dependencies
+/frontend/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Angular
+/frontend/.angular/cache/
+/frontend/.sass-cache/
+/frontend/connect.lock/
+/frontend/coverage/
+/frontend/libpeerconnection.log/
+testem.log
+/frontend/typings/
+
+# Package managers
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
+
+# ===================
+# PYTHON / BACKEND
+# ===================
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -205,3 +240,75 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ===================
+# DATABASE
+# ===================
+*.db
+*.sqlite
+*.sqlite3
+codechill.db
+
+# ===================
+# LOGS & TEMPORARY FILES
+# ===================
+logs/
+backend/logs/
+*.log
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# ===================
+# IDEs & EDITORS
+# ===================
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# ===================
+# PROJECT SPECIFIC
+# ===================
+# Auth0 & API keys (never commit these)
+auth0-config.json
+secrets.json
+api-keys.json
+
+# Local development files
+local.json
+dev-notes.md
+scratch.py
+test.py
+debug.log
+
+# Build artifacts
+build/
+dist/
+*.tgz
+*.tar.gz
+
+# Media & uploads
+uploads/
+media/
+static/uploads/
+
+# Certificates & keys
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Docker
+docker-compose.override.yml
