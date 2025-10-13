@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { AuthenticationService } from '@core/services/authentication.service';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-login',
+    imports: [CommonModule],
+    template: `
     <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
       <div class="max-w-md w-full space-y-8 p-8">
         <!-- Logo and Header -->
