@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-loading-spinner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
     <div [class]="containerClasses()">
       <div [class]="spinnerClasses()"></div>

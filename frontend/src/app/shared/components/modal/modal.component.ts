@@ -11,7 +11,9 @@ export interface ModalConfig {
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
     <div 
       class="fixed inset-0 z-50 overflow-y-auto"

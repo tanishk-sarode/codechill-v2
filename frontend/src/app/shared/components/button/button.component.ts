@@ -7,7 +7,9 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'app-button',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   template: `
     <button
       [class]="buttonClasses()"
