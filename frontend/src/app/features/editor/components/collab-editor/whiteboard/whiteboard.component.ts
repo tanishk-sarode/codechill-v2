@@ -93,14 +93,14 @@ interface Shape {
         <div class="control-section">
           <div class="color-controls">
             <button 
-              *ngFor="let color of colors" 
-              mat-mini-fab
-              [style.background-color]="color"
+              *ngFor="let color of colors"
+              class="color-btn"
+              [style.backgroundColor]="color"
               [class.active]="currentColor() === color"
-              (click)="setColor(color)"
-              class="color-btn">
+              (click)="setColor(color)">
             </button>
           </div>
+
           
           <div class="size-control">
             <mat-icon>line_weight</mat-icon>
@@ -326,17 +326,17 @@ interface Shape {
 
     .toolbar button {
       color: white !important;
-      background: rgba(255, 255, 255, 0.15) !important;
+    //   background: rgba(255, 255, 255, 0.15) !important;
       border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
 
     .toolbar button:hover {
-      background: rgba(255, 255, 255, 0.25) !important;
+    //   background: rgba(255, 255, 255, 0.25) !important;
       transform: translateY(-1px);
     }
 
     .toolbar button.active {
-      background: rgba(255, 255, 255, 0.3) !important;
+    //   background: rgba(255, 255, 255, 0.3) !important;
       border-color: rgba(255, 255, 255, 0.5) !important;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
@@ -575,7 +575,7 @@ export class WhiteboardComponent implements AfterViewInit, OnDestroy {
     // Calculate optimal canvas size with better responsiveness
     const padding = 40;
     const maxWidth = Math.max(rect.width - padding, 400); // Minimum width
-    const maxHeight = Math.max(rect.height - padding, 300); // Minimum height
+    const maxHeight = Math.max(rect.height - padding, 500); // Minimum height
     
     // Store old dimensions to preserve aspect ratio if needed
     const oldWidth = this.canvasWidth;

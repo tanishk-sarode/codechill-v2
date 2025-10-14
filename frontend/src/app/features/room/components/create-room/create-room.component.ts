@@ -6,7 +6,7 @@ import { InputComponent } from '@shared/components/input/input.component';
 import { ModalComponent } from '@shared/components/modal/modal.component';
 import { RoomService } from '../../services/room.service';
 import { NotificationService } from '@shared/services/notification.service';
-import { CreateRoomRequest, ProgrammingLanguage, Room } from '@core/types';
+import { CreateRoomRequest, ProgrammingLanguage, Room } from '@core/types/room.types';
 import { catchError, of } from 'rxjs';
 
 @Component({
@@ -205,8 +205,8 @@ export class CreateRoomComponent {
       name: this.roomName().trim(),
       description: this.description().trim() || undefined,
       language: this.language(),
-      maxParticipants: this.maxParticipants(),
-      isPrivate: this.isPrivate()
+      max_participants: this.maxParticipants(),
+      is_private: this.isPrivate()
     };
 
     this.roomService.createRoom(request).pipe(

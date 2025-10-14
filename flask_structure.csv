@@ -1,19 +1,19 @@
-File/Folder,Path,Purpose,Notes
-app.py,app.py,Main Flask application,"App initialization, routes, Socket.IO"
-models/,models/,Database models,"User, Room, Message, Execution models"
-routes/,routes/,API routes,Separate route modules
-auth.py,routes/auth.py,Authentication routes,"Login, logout, user management"
-rooms.py,routes/rooms.py,Room management,"Create, join, leave rooms"
-execution.py,routes/execution.py,Code execution,Judge0 API integration
-sockets/,sockets/,Socket.IO handlers,Real-time event handling
-room_events.py,sockets/room_events.py,Room Socket events,"Join, leave, typing indicators"
-editor_events.py,sockets/editor_events.py,Editor Socket events,Real-time code synchronization
-chat_events.py,sockets/chat_events.py,Chat Socket events,Message broadcasting
-services/,services/,Business logic,External API integrations
-judge0_service.py,services/judge0_service.py,Code execution,Judge0 API wrapper
-auth_service.py,services/auth_service.py,Auth0 integration,JWT verification
-profile_service.py,services/profile_service.py,Profile APIs,"GitHub, LeetCode, Codeforces"
-config/,config/,Configuration,"Database, Auth0, Judge0 settings"
-requirements.txt,requirements.txt,Dependencies,"Flask, Flask-SocketIO, PyMySQL"
-.env,.env,Environment variables,"Secrets, API keys, database URL"
-database.sql,database.sql,Database schema,MySQL table definitions
+File/Folder       , Path                       , Purpose               , Notes
+app.py            , app.py                     , Main Flask application, "App initialization, routes, Socket.IO"
+models/           , models/                    , Database models       , "User, Room, Message, Execution models"
+routes/           , routes/                    , API routes            , Separate route modules
+auth.py           , routes/auth.py             , Authentication routes , "Login, logout, user management"
+rooms.py          , routes/rooms.py            , Room management       , "Create, join, leave rooms"
+execution.py      , routes/execution.py        , Code execution        , Judge0 API integration
+sockets/          , sockets/                   , Socket.IO handlers    , Real-time event handling
+room_events.py    , sockets/room_events.py     , Room Socket events    , "Join, leave, typing indicators"
+editor_events.py  , sockets/editor_events.py   , Editor Socket events  , Real-time code synchronization
+chat_events.py    , sockets/chat_events.py     , Chat Socket events    , Message broadcasting
+services/         , services/                  , Business logic        , External API integrations
+judge0_service.py , services/judge0_service.py , Code execution        , Judge0 API wrapper
+auth_service.py   , services/auth_service.py   , Auth0 integration     , JWT verification
+profile_service.py, services/profile_service.py, Profile APIs          , "GitHub, LeetCode, Codeforces"
+config/           , config/                    , Configuration         , "Database, Auth0, Judge0 settings"
+requirements.txt  , requirements.txt           , Dependencies          , "Flask, Flask-SocketIO, PyMySQL"
+.env              , .env                       , Environment variables , "Secrets, API keys, database URL"
+database.sql      , database.sql               , Database schema       , MySQL table definitions

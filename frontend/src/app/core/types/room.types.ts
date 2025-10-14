@@ -2,46 +2,44 @@ export interface Room {
   id: string;
   name: string;
   description?: string;
-  createdBy: string;
-  participants: RoomParticipant[];
-  isPrivate: boolean;
-  maxParticipants: number;
+  created_by: string;
+  participants?: RoomParticipant[];
+  is_private: boolean;
+  max_participants: number;
+  current_participants: number;
   language: ProgrammingLanguage;
-  createdAt: Date;
-  updatedAt: Date;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  last_activity?: string;
+  content_version: number;
 }
 
 export interface RoomParticipant {
-  userId: string;
-  userName: string;
-  userPicture?: string;
+  id: string;
+  room_id: string;
+  user_id: string;
+  user_name: string;
+  user_picture?: string;
   role: ParticipantRole;
-  joinedAt: Date;
-  isActive: boolean;
-  cursor?: EditorCursor;
-}
-
-export interface EditorCursor {
-  line: number;
-  column: number;
-  selection?: {
-    startLine: number;
-    startColumn: number;
-    endLine: number;
-    endColumn: number;
-  };
+  is_active: boolean;
+  cursor_line: number;
+  cursor_column: number;
+  selection_data?: any;
+  joined_at: string;
+  last_seen?: string;
 }
 
 export interface CreateRoomRequest {
   name: string;
   description?: string;
-  isPrivate: boolean;
-  maxParticipants: number;
+  is_private: boolean;
+  max_participants: number;
   language: ProgrammingLanguage;
 }
 
 export interface JoinRoomRequest {
-  roomId: string;
+  room_id: string;
   password?: string;
 }
 

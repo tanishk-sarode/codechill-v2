@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Optional
 import secrets
 import string
 
-from ..models import db, Room, RoomParticipant, User, Message, Execution
+from models import db, Room, RoomParticipant, User, Message, Execution
 
 class RoomService:
     """Service for room-related operations"""

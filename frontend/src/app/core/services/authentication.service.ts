@@ -94,7 +94,14 @@ export class AuthenticationService {
       auth0Id: auth0User.sub
     };
 
-    return this.http.post<{ data: User }>(`${this.envService.apiUrl}/auth/sync`, userData).pipe(
+    // Get the Auth0 access token and send it in the Authorization header
+    return this.auth0.getAccessTokenSilently().pipe(
+      switchMap((accessToken: string) => {
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${accessToken}`
+        });
+        return this.http.post<{ data: User }>(`${this.envService.apiUrl}/auth/sync`, userData, { headers });
+      }),
       map(response => response.data),
       tap(user => {
         this.updateAuthState({

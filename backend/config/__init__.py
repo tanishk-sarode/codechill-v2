@@ -14,7 +14,15 @@ class Config:
     MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or 'password'
     MYSQL_DATABASE = os.environ.get('MYSQL_DATABASE') or 'codechill'
     
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
+    # Use SQLite fallback if no MySQL configured or if SQLALCHEMY_DATABASE_URI is explicitly set
+    if os.environ.get('SQLALCHEMY_DATABASE_URI'):
+        SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    elif os.environ.get('MYSQL_HOST'):
+        SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USERNAME}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
+    else:
+        # Fallback to SQLite for development
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(os.path.dirname(__file__), '..', 'codechill_dev.db')}"
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_recycle': 300,

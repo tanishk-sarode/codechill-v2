@@ -51,27 +51,18 @@ import { Collaborator } from '../collab-editor.component';
 
       <div class="actions-section">
         <button 
-          mat-raised-button 
-          color="primary" 
-          class="login-btn primary-action" 
-          (click)="onGoogleLogin()">
-          <mat-icon class="btn-icon">account_circle</mat-icon>
-          <span class="btn-text">Google Login</span>
-        </button>
-        
-        <button 
           mat-stroked-button 
           class="invite-btn secondary-action">
           <mat-icon class="btn-icon">person_add</mat-icon>
           <span class="btn-text">Invite Others</span>
         </button>
         
-        <button 
+        <!-- <button 
           mat-flat-button 
           class="join-btn accent-action">
           <mat-icon class="btn-icon">meeting_room</mat-icon>
           <span class="btn-text">Join Meeting</span>
-        </button>
+        </button> -->
       </div>
     </aside>
   `,

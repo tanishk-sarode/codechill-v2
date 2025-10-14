@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 import jwt as pyjwt
 from functools import wraps
 
-from ..models import db, User
-from ..services.auth_service import AuthService
-from ..services.user_service import UserService
+from models import db, User
+from services.auth_service import AuthService
+from services.user_service import UserService
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -44,14 +44,27 @@ def sync_user():
         token = auth_header.split(' ')[1]  # Remove 'Bearer ' prefix
         payload = AuthService.verify_auth0_token(token)
         
-        # Extract user data from Auth0 token
-        auth0_id = payload.get('sub')
-        email = payload.get('email')
-        name = payload.get('name') or payload.get('nickname') or email.split('@')[0]
-        picture = payload.get('picture')
-        
+        # Extract user data from Auth0 token with fallbacks
+        request_data = request.get_json(silent=True) or {}
+        auth0_id = payload.get('sub') or request_data.get('auth0Id') or request_data.get('auth0_id')
+        email = payload.get('email') or request_data.get('email')
+        name = payload.get('name') or payload.get('nickname') or request_data.get('name')
+        picture = payload.get('picture') or request_data.get('picture')
+
+        if not email or not name or not picture:
+            try:
+                userinfo = AuthService.get_auth0_user_info(token)
+                email = email or userinfo.get('email')
+                name = name or userinfo.get('name') or userinfo.get('nickname')
+                picture = picture or userinfo.get('picture')
+            except Exception as info_error:
+                current_app.logger.warning(f"Auth0 userinfo fetch failed: {str(info_error)}")
+
         if not auth0_id or not email:
             return jsonify({'error': 'Invalid token payload'}), 400
+
+        if not name and email:
+            name = email.split('@')[0] if '@' in email else email
         
         # Find or create user
         user = User.query.filter_by(auth0_id=auth0_id).first()

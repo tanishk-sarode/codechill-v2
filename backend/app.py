@@ -8,11 +8,14 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-from .config import get_config
-from .models import db
-from .routes.auth import auth_bp
-from .routes.room import room_bp
-from .sockets import create_socket_handlers
+from config import get_config
+from models import db
+from routes.auth import auth_bp
+from routes.room import room_bp
+from routes.execution import execution_bp
+from routes.chat import chat_bp
+from routes.users import users_bp
+from sockets import create_socket_handlers
 
 def create_app(config_name=None):
     """Application factory"""
@@ -55,6 +58,9 @@ def create_app(config_name=None):
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(room_bp)
+    app.register_blueprint(execution_bp)
+    app.register_blueprint(chat_bp)
+    app.register_blueprint(users_bp)
     
     # Error handlers
     @app.errorhandler(404)
@@ -100,10 +106,21 @@ def create_app(config_name=None):
             'version': '1.0.0',
             'description': 'Real-time collaborative coding platform API',
             'endpoints': {
-                'auth': '/api/auth',
+                'authentication': '/api/auth',
                 'rooms': '/api/rooms',
+                'users': '/api/users',
+                'chat': '/api/chat',
+                'execution': '/api/execution',
                 'websocket': '/socket.io'
-            }
+            },
+            'features': [
+                'Real-time collaborative editing',
+                'Code execution with Judge0',
+                'Room-based chat messaging',
+                'User profile management',
+                'Auth0 authentication',
+                'Social platform integration'
+            ]
         })
     
     # Database initialization

@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 import json
 from functools import lru_cache
 import time
+from jwt.algorithms import RSAAlgorithm
 
 class AuthService:
     """Authentication service for Auth0 integration"""
@@ -28,7 +29,7 @@ class AuthService:
                 key_data = jwks['keys'][0]
                 
                 # Convert JWK to PEM format using jwt.algorithms
-                public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key_data))
+                public_key = RSAAlgorithm.from_jwk(json.dumps(key_data))
                 
                 return public_key
             else:

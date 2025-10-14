@@ -5,7 +5,7 @@ import threading
 from typing import Optional, Dict, Any
 import json
 
-from ..models import db, User, Room, RoomParticipant
+from models import db, User, Room, RoomParticipant
 
 class UserService:
     """Service for user-related operations"""
@@ -310,7 +310,7 @@ class UserService:
         """Search users by name or email"""
         try:
             users = User.query.filter(
-                User.is_active == True,
+                User.is_active.is_(True),
                 db.or_(
                     User.name.ilike(f'%{query}%'),
                     User.email.ilike(f'%{query}%')

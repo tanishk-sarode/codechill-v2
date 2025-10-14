@@ -4,8 +4,11 @@ from flask import current_app, request
 from datetime import datetime
 import json
 
-from ..models import db, Room, RoomParticipant, User, Message, Execution
-from ..services.room_service import RoomService
+from models import db, Room, RoomParticipant, User, Message, Execution
+from services.room_service import RoomService
+
+from services.auth_service import AuthService
+from flask import session
 
 def create_socket_handlers(socketio: SocketIO):
     """Create and register Socket.IO event handlers"""
@@ -16,21 +19,21 @@ def create_socket_handlers(socketio: SocketIO):
     @socketio.on('connect')
     def handle_connect(auth):
         """Handle client connection"""
+        if not auth or 'token' not in auth:
+            current_app.logger.warning(f"Connection attempt from {request.sid} without token. Rejecting.")
+            return False  # Reject connection
+
+        token = auth['token']
         try:
-            # Verify JWT token
-            if not auth or 'token' not in auth:
-                current_app.logger.warning('Connection attempt without token')
-                disconnect()
+            # Use the existing, working AuthService to verify the RS256 token
+            payload = AuthService.verify_auth0_token(token)
+            if not payload:
+                current_app.logger.warning(f"Connection attempt from {request.sid} with an invalid token. Rejecting.")
                 return False
-            
-            token = auth['token']
-            try:
-                decoded_token = decode_token(token)
-                user_id = decoded_token['sub']
-            except Exception as e:
-                current_app.logger.warning(f'Invalid token on connect: {str(e)}')
-                disconnect()
-                return False
+
+            user_id = payload.get('sub')
+            session['user_id'] = user_id
+            session['user_info'] = payload
             
             # Store connection info
             active_connections[request.sid] = {
@@ -39,13 +42,13 @@ def create_socket_handlers(socketio: SocketIO):
                 'current_room': None
             }
             
-            current_app.logger.info(f'User {user_id} connected with session {request.sid}')
+            current_app.logger.info(f"Client {user_id} connected successfully with session ID {request.sid}")
             emit('connected', {'message': 'Connected successfully'})
-            
+
         except Exception as e:
-            current_app.logger.error(f'Connection error: {str(e)}')
-            disconnect()
-            return False
+            # Log the specific error for easier debugging
+            current_app.logger.error(f"Socket.IO connection failed for {request.sid} due to token validation error: {e}")
+            return False # Reject connection
     
     @socketio.on('disconnect')
     def handle_disconnect():

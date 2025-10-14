@@ -5,9 +5,9 @@ from datetime import datetime
 import secrets
 import string
 
-from ..models import db, Room, RoomParticipant, User, Message
-from ..services.room_service import RoomService
-from ..config import DEFAULT_CODE_TEMPLATES, SUPPORTED_LANGUAGES
+from models import db, Room, RoomParticipant, User, Message
+from services.room_service import RoomService
+from config import DEFAULT_CODE_TEMPLATES, SUPPORTED_LANGUAGES
 
 room_bp = Blueprint('room', __name__, url_prefix='/api/rooms')
 

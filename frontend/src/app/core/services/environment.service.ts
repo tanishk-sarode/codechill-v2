@@ -1,23 +1,12 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { Environment } from '@core/types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EnvironmentService {
-  private readonly env: Environment = {
-    production: false,
-    apiUrl: 'http://localhost:5001/api',
-    socketUrl: 'http://localhost:5001',
-    auth0: {
-      domain: 'your-auth0-domain.auth0.com',
-      clientId: 'your-auth0-client-id',
-      audience: 'your-auth0-audience'
-    },
-    github: {
-      clientId: 'your-github-client-id'
-    }
-  };
+  private readonly env: Environment = environment;
 
   get production(): boolean {
     return this.env.production;

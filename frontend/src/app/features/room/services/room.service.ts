@@ -1,10 +1,10 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, map, tap, catchError, of, switchMap } from 'rxjs';
-import { Room, RoomParticipant, CreateRoomRequest, JoinRoomRequest, ApiResponse, PaginatedResponse } from '@core/types';
 import { EnvironmentService } from '@core/services/environment.service';
 import { AuthenticationService } from '@core/services/authentication.service';
 import { SocketService } from '@core/services/socket.service';
+import { Room, CreateRoomRequest, JoinRoomRequest, RoomParticipant } from '@core/types/room.types';
 
 @Injectable({
   providedIn: 'root'
@@ -39,15 +39,38 @@ export class RoomService {
   }
 
   private setupSocketListeners(): void {
-    // Listen for room updates
-    this.socketService.roomParticipantJoined$.subscribe(participant => {
-      this.participantsSignal.update(participants => [...participants, participant]);
+    // Listen for room updates from Socket.IO
+    this.socketService.userJoined$.subscribe(data => {
+      this.participantsSignal.update(participants => [
+        ...participants,
+        {
+          id: data.user_id,
+          room_id: data.room_id || '',
+          user_id: data.user_id,
+          user_name: data.user_name,
+          user_picture: data.user_picture,
+          role: 'participant',
+          is_active: true,
+          cursor_line: 1,
+          cursor_column: 1,
+          joined_at: new Date().toISOString()
+        }
+      ]);
     });
 
-    this.socketService.roomParticipantLeft$.subscribe(({ userId }) => {
+    this.socketService.userLeft$.subscribe(data => {
       this.participantsSignal.update(participants => 
-        participants.filter(p => p.userId !== userId)
+        participants.filter(p => p.user_id !== data.user_id)
       );
+    });
+
+    this.socketService.roomJoined$.subscribe(data => {
+      this.currentRoomSignal.update(room => {
+        if (room) {
+          return { ...room, ...data.room_data };
+        }
+        return data.room_data;
+      });
     });
   }
 
@@ -57,18 +80,18 @@ export class RoomService {
     this.errorSignal.set(null);
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => this.http.post<ApiResponse<Room>>(
+      switchMap(token => this.http.post<{ message: string; room: Room }>(
         `${this.envService.apiUrl}/rooms`,
         request,
         this.buildAuthOptions(token || undefined)
       )),
-      map(response => response.data!),
+      map(response => response.room),
       tap(room => {
         this.roomsSignal.update(rooms => [room, ...rooms]);
         this.isLoadingSignal.set(false);
       }),
       catchError(error => {
-        this.errorSignal.set(error.message || 'Failed to create room');
+        this.errorSignal.set(error.error?.error || error.message || 'Failed to create room');
         this.isLoadingSignal.set(false);
         throw error;
       })
@@ -76,25 +99,25 @@ export class RoomService {
   }
 
   // Join a room
-  joinRoom(request: JoinRoomRequest): Observable<Room> {
+  joinRoom(roomId: string, password?: string): Observable<Room> {
     this.isLoadingSignal.set(true);
     this.errorSignal.set(null);
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => this.http.post<ApiResponse<Room>>(
-        `${this.envService.apiUrl}/rooms/${request.roomId}/join`,
-        request,
+      switchMap(token => this.http.post<{ room: Room }>(
+        `${this.envService.apiUrl}/rooms/${roomId}/join`,
+        { password },
         this.buildAuthOptions(token || undefined)
       )),
-      map(response => response.data!),
+      map(response => response.room),
       tap(room => {
         this.currentRoomSignal.set(room);
-        this.participantsSignal.set(room.participants);
-        this.socketService.joinRoom(room.id, request.password);
+        this.participantsSignal.set(room.participants || []);
+        this.socketService.joinRoom(room.id, password);
         this.isLoadingSignal.set(false);
       }),
       catchError(error => {
-        this.errorSignal.set(error.message || 'Failed to join room');
+        this.errorSignal.set(error.error?.error || error.message || 'Failed to join room');
         this.isLoadingSignal.set(false);
         throw error;
       })
@@ -109,7 +132,7 @@ export class RoomService {
     }
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => this.http.post<ApiResponse<void>>(
+      switchMap(token => this.http.post<{ message: string }>(
         `${this.envService.apiUrl}/rooms/${currentRoom.id}/leave`,
         {},
         this.buildAuthOptions(token || undefined)
@@ -121,57 +144,50 @@ export class RoomService {
         this.participantsSignal.set([]);
       }),
       catchError(error => {
-        this.errorSignal.set(error.message || 'Failed to leave room');
+        this.errorSignal.set(error.error?.error || error.message || 'Failed to leave room');
         throw error;
       })
     );
   }
 
   // Get user's rooms
-  getUserRooms(page: number = 1, limit: number = 10): Observable<Room[]> {
+  getUserRooms(): Observable<Room[]> {
     this.isLoadingSignal.set(true);
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const params = { page: page.toString(), limit: limit.toString() };
-        return this.http.get<PaginatedResponse<Room>>(
-          `${this.envService.apiUrl}/rooms/my-rooms`,
-          { ...this.buildAuthOptions(token || undefined), params }
-        );
-      }),
-      map(response => response.data!),
+      switchMap(token => this.http.get<{ rooms: Room[] }>(
+        `${this.envService.apiUrl}/rooms/my-rooms`,
+        this.buildAuthOptions(token || undefined)
+      )),
+      map(response => response.rooms),
       tap(rooms => {
         this.roomsSignal.set(rooms);
         this.isLoadingSignal.set(false);
       }),
       catchError(error => {
-        this.errorSignal.set(error.message || 'Failed to fetch rooms');
+        this.errorSignal.set(error.error?.error || error.message || 'Failed to fetch rooms');
         this.isLoadingSignal.set(false);
         return of([]);
       })
     );
   }
 
-  // Search public rooms
-  searchRooms(query: string = '', page: number = 1, limit: number = 10): Observable<Room[]> {
+  // Get public rooms
+  getPublicRooms(page: number = 1, per_page: number = 20, search?: string, language?: string): Observable<{ rooms: Room[], pagination: any }> {
     this.isLoadingSignal.set(true);
 
-    const params = { 
-      q: query, 
-      page: page.toString(), 
-      limit: limit.toString(),
-      type: 'public'
-    };
+    const params: any = { page: page.toString(), per_page: per_page.toString() };
+    if (search) params.search = search;
+    if (language) params.language = language;
 
-    return this.http.get<PaginatedResponse<Room>>(`${this.envService.apiUrl}/rooms/search`, { params }).pipe(
-      map(response => response.data!),
-      tap(rooms => {
+    return this.http.get<{ rooms: Room[], pagination: any }>(`${this.envService.apiUrl}/rooms`, { params }).pipe(
+      tap(() => {
         this.isLoadingSignal.set(false);
       }),
       catchError(error => {
-        this.errorSignal.set(error.message || 'Failed to search rooms');
+        this.errorSignal.set(error.error?.error || error.message || 'Failed to fetch public rooms');
         this.isLoadingSignal.set(false);
-        return of([]);
+        return of({ rooms: [], pagination: { page: 1, pages: 1, total: 0 } });
       })
     );
   }
@@ -179,27 +195,27 @@ export class RoomService {
   // Get room details
   getRoomDetails(roomId: string): Observable<Room> {
     return this.authService.getAccessToken().pipe(
-      switchMap(token => this.http.get<ApiResponse<Room>>(
+      switchMap(token => this.http.get<{ room: Room }>(
         `${this.envService.apiUrl}/rooms/${roomId}`,
         this.buildAuthOptions(token || undefined)
       )),
-      map(response => response.data!),
+      map(response => response.room),
       tap(room => {
         this.currentRoomSignal.set(room);
-        this.participantsSignal.set(room.participants);
+        this.participantsSignal.set(room.participants || []);
       })
     );
   }
 
   // Update room settings (owner only)
-  updateRoom(roomId: string, updates: Partial<Room>): Observable<Room> {
+  updateRoom(roomId: string, updates: Partial<CreateRoomRequest>): Observable<Room> {
     return this.authService.getAccessToken().pipe(
-      switchMap(token => this.http.patch<ApiResponse<Room>>(
+      switchMap(token => this.http.put<{ room: Room }>(
         `${this.envService.apiUrl}/rooms/${roomId}`,
         updates,
         this.buildAuthOptions(token || undefined)
       )),
-      map(response => response.data!),
+      map(response => response.room),
       tap(room => {
         this.currentRoomSignal.set(room);
         this.roomsSignal.update(rooms => 
@@ -212,7 +228,7 @@ export class RoomService {
   // Delete room (owner only)
   deleteRoom(roomId: string): Observable<void> {
     return this.authService.getAccessToken().pipe(
-      switchMap(token => this.http.delete<ApiResponse<void>>(
+      switchMap(token => this.http.delete<{ message: string }>(
         `${this.envService.apiUrl}/rooms/${roomId}`,
         this.buildAuthOptions(token || undefined)
       )),
@@ -227,6 +243,20 @@ export class RoomService {
     );
   }
 
+  // Get participants of a room
+  getRoomParticipants(roomId: string): Observable<RoomParticipant[]> {
+    return this.authService.getAccessToken().pipe(
+      switchMap(token => this.http.get<{ participants: RoomParticipant[] }>(
+        `${this.envService.apiUrl}/rooms/${roomId}/participants`,
+        this.buildAuthOptions(token || undefined)
+      )),
+      map(response => response.participants),
+      tap(participants => {
+        this.participantsSignal.set(participants);
+      })
+    );
+  }
+
   // Get current user's role in the current room
   getCurrentUserRole(): 'owner' | 'moderator' | 'participant' | null {
     const currentRoom = this.currentRoomSignal();
@@ -236,8 +266,8 @@ export class RoomService {
       return null;
     }
 
-    const participant = currentRoom.participants.find(p => p.userId === currentUser.id);
-    return participant?.role || null;
+    const participant = currentRoom.participants?.find(p => p.user_id === currentUser.id);
+    return (participant?.role as any) || null;
   }
 
   // Check if current user can perform admin actions
