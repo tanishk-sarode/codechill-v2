@@ -1,0 +1,123 @@
+<div class="collab-root" [class.dark-theme]="isDarkMode">
+  <!-- Video Chat Component -->
+    
+  <app-video-chat 
+    (codeBroadcasting)="onCodeBroadcastChange($event)"
+    (whiteboardBroadcasting)="onWhiteboardBroadcastChange($event)">
+  </app-video-chat>
+ 
+  
+  <!-- Header -->
+  <header class="topbar">
+    <div class="left">
+      <button 
+        mat-fab 
+        (click)="toggleLeft()" 
+        matTooltip="Toggle room panel"
+        class="panel-toggle left-toggle"
+        [class.collapsed]="isLeftCollapsed">
+        <mat-icon>{{ isLeftCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+    <div class="center">
+      <div class="tab-switcher">
+        <button 
+          mat-raised-button 
+          [class.active]="selectedTabIndex === 0"
+          (click)="switchToTab(0)"
+          class="tab-switch-button">
+          <mat-icon>code</mat-icon>
+          <span>Code Editor</span>
+          <div class="broadcast-indicator" *ngIf="isCodeBroadcasting">
+            <mat-icon class="live-indicator">radio_button_checked</mat-icon>
+          </div>
+        </button>
+        <button 
+          mat-raised-button 
+          [class.active]="selectedTabIndex === 1"
+          (click)="switchToTab(1)"
+          class="tab-switch-button">
+          <mat-icon>draw</mat-icon>
+          <span>Whiteboard</span>
+          <div class="broadcast-indicator" *ngIf="isWhiteboardBroadcasting">
+            <mat-icon class="live-indicator">radio_button_checked</mat-icon>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="right">
+      <button 
+        mat-fab 
+        class="theme-toggle" 
+        (click)="toggleTheme()" 
+        matTooltip="Toggle theme"
+        [attr.aria-label]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+        [class.dark-active]="isDarkMode">
+        <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <button 
+        mat-fab 
+        (click)="toggleRight()" 
+        matTooltip="Toggle chat panel"
+        class="panel-toggle right-toggle"
+        [class.collapsed]="isRightCollapsed">
+        <mat-icon>{{ isRightCollapsed ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <div class="content-grid" [class.left-collapsed]="isLeftCollapsed" [class.right-collapsed]="isRightCollapsed">
+    <!-- Left: Room Panel -->
+    <aside class="left-panel" *ngIf="!isLeftCollapsed">
+      <app-room-panel
+        [roomData]="roomData"
+        (googleLogin)="onGoogleLogin()">
+      </app-room-panel>
+    </aside>
+
+    <!-- Center: Main Content -->
+    <main class="main-content">
+      <!-- Code Editor Tab Content -->
+      <div class="tab-content" *ngIf="selectedTabIndex === 0">
+        <div class="broadcast-controls" *ngIf="isCodeBroadcasting">
+          <div class="broadcast-status">
+            <div>
+              <mat-icon>cast</mat-icon>
+              <span>Someone is sharing their screen</span>
+            </div>
+            <button mat-button color="primary" (click)="toggleCodeView()" class="view-toggle">
+              <mat-icon>{{ viewingCodeBroadcast ? 'visibility_off' : 'visibility' }}</mat-icon>
+              {{ viewingCodeBroadcast ? 'Switch to your editor' : 'View shared screen' }}
+            </button>
+          </div>
+        </div>
+        <app-code-editor [class.dimmed]="isCodeBroadcasting && viewingCodeBroadcast"></app-code-editor>
+      </div>
+      
+      <!-- Whiteboard Tab Content -->
+      <div class="tab-content" *ngIf="selectedTabIndex === 1">
+        <div class="broadcast-controls" *ngIf="isWhiteboardBroadcasting">
+          <div class="broadcast-status">
+            <div>
+              <mat-icon>cast</mat-icon>
+              <span>Someone is sharing their whiteboard</span>
+            </div>
+            <button mat-button color="primary" (click)="toggleWhiteboardView()" class="view-toggle">
+              <mat-icon>{{ viewingWhiteboardBroadcast ? 'visibility_off' : 'visibility' }}</mat-icon>
+              {{ viewingWhiteboardBroadcast ? 'Switch to your whiteboard' : 'View shared whiteboard' }}
+            </button>
+          </div>
+        </div>
+        <app-whiteboard [class.dimmed]="isWhiteboardBroadcasting && viewingWhiteboardBroadcast"></app-whiteboard>
+      </div>
+    </main>
+
+    <!-- Right: Chat Panel -->
+    <aside class="right-panel" *ngIf="!isRightCollapsed">
+      <app-chat-panel
+        [messages]="messages"
+        (newMessage)="onNewMessage($event)">
+      </app-chat-panel>
+    </aside>
+  </div>
+</div>

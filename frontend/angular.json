@@ -32,6 +32,15 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": [
+              "codemirror",
+              "konva",
+              "konva/lib/Group",
+              "konva/lib/Layer",
+              "konva/lib/Shape",
+              "konva/lib/Stage",
+              "konva/lib/shapes/Sprite"
+            ],
             "assets": [
               {
                 "glob": "**/*",
@@ -45,8 +54,10 @@
               }
             ],
             "styles": [
-              "src/styles/global.scss",
-              "node_modules/monaco-editor/min/vs/editor/editor.main.css"
+              "src/styles/global.css",
+              "node_modules/monaco-editor/min/vs/editor/editor.main.css",
+              "node_modules/codemirror/lib/codemirror.css",
+              "node_modules/codemirror/addon/fold/foldgutter.css"
             ],
             "scripts": []
           },
@@ -106,7 +117,7 @@
               }
             ],
             "styles": [
-              "src/styles/global.scss"
+              "src/styles/global.css"
             ],
             "scripts": []
           }

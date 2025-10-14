@@ -34,6 +34,10 @@ export class RoomService {
     this.setupSocketListeners();
   }
 
+  private buildAuthOptions(token?: string): { headers?: Record<string, string> } {
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  }
+
   private setupSocketListeners(): void {
     // Listen for room updates
     this.socketService.roomParticipantJoined$.subscribe(participant => {
@@ -53,10 +57,11 @@ export class RoomService {
     this.errorSignal.set(null);
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        return this.http.post<ApiResponse<Room>>(`${this.envService.apiUrl}/rooms`, request, { headers });
-      }),
+      switchMap(token => this.http.post<ApiResponse<Room>>(
+        `${this.envService.apiUrl}/rooms`,
+        request,
+        this.buildAuthOptions(token || undefined)
+      )),
       map(response => response.data!),
       tap(room => {
         this.roomsSignal.update(rooms => [room, ...rooms]);
@@ -76,10 +81,11 @@ export class RoomService {
     this.errorSignal.set(null);
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        return this.http.post<ApiResponse<Room>>(`${this.envService.apiUrl}/rooms/${request.roomId}/join`, request, { headers });
-      }),
+      switchMap(token => this.http.post<ApiResponse<Room>>(
+        `${this.envService.apiUrl}/rooms/${request.roomId}/join`,
+        request,
+        this.buildAuthOptions(token || undefined)
+      )),
       map(response => response.data!),
       tap(room => {
         this.currentRoomSignal.set(room);
@@ -103,10 +109,11 @@ export class RoomService {
     }
 
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        return this.http.post<ApiResponse<void>>(`${this.envService.apiUrl}/rooms/${currentRoom.id}/leave`, {}, { headers });
-      }),
+      switchMap(token => this.http.post<ApiResponse<void>>(
+        `${this.envService.apiUrl}/rooms/${currentRoom.id}/leave`,
+        {},
+        this.buildAuthOptions(token || undefined)
+      )),
       map(() => undefined),
       tap(() => {
         this.socketService.leaveRoom(currentRoom.id);
@@ -126,9 +133,11 @@ export class RoomService {
 
     return this.authService.getAccessToken().pipe(
       switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const params = { page: page.toString(), limit: limit.toString() };
-        return this.http.get<PaginatedResponse<Room>>(`${this.envService.apiUrl}/rooms/my-rooms`, { headers, params });
+        return this.http.get<PaginatedResponse<Room>>(
+          `${this.envService.apiUrl}/rooms/my-rooms`,
+          { ...this.buildAuthOptions(token || undefined), params }
+        );
       }),
       map(response => response.data!),
       tap(rooms => {
@@ -170,10 +179,10 @@ export class RoomService {
   // Get room details
   getRoomDetails(roomId: string): Observable<Room> {
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        return this.http.get<ApiResponse<Room>>(`${this.envService.apiUrl}/rooms/${roomId}`, { headers });
-      }),
+      switchMap(token => this.http.get<ApiResponse<Room>>(
+        `${this.envService.apiUrl}/rooms/${roomId}`,
+        this.buildAuthOptions(token || undefined)
+      )),
       map(response => response.data!),
       tap(room => {
         this.currentRoomSignal.set(room);
@@ -185,10 +194,11 @@ export class RoomService {
   // Update room settings (owner only)
   updateRoom(roomId: string, updates: Partial<Room>): Observable<Room> {
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        return this.http.patch<ApiResponse<Room>>(`${this.envService.apiUrl}/rooms/${roomId}`, updates, { headers });
-      }),
+      switchMap(token => this.http.patch<ApiResponse<Room>>(
+        `${this.envService.apiUrl}/rooms/${roomId}`,
+        updates,
+        this.buildAuthOptions(token || undefined)
+      )),
       map(response => response.data!),
       tap(room => {
         this.currentRoomSignal.set(room);
@@ -202,10 +212,10 @@ export class RoomService {
   // Delete room (owner only)
   deleteRoom(roomId: string): Observable<void> {
     return this.authService.getAccessToken().pipe(
-      switchMap(token => {
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        return this.http.delete<ApiResponse<void>>(`${this.envService.apiUrl}/rooms/${roomId}`, { headers });
-      }),
+      switchMap(token => this.http.delete<ApiResponse<void>>(
+        `${this.envService.apiUrl}/rooms/${roomId}`,
+        this.buildAuthOptions(token || undefined)
+      )),
       map(() => undefined),
       tap(() => {
         this.roomsSignal.update(rooms => rooms.filter(r => r.id !== roomId));
